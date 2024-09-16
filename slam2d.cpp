@@ -188,14 +188,15 @@ void radarCallback(const sensor_msgs::PointCloud2ConstPtr& cloud_msg,
         pcl::PointCloud<pcl::PointXYZI> pcl_cloud;
         pcl::fromROSMsg(*current_cloud_msg, pcl_cloud);
 
-        if (enable_passthrough) {
-            applyPassthroughFilter(pcl_cloud, sensor_id);
-            }   
-
 
         Eigen::Matrix4f rotation_matrix = getTransformationMatrix(sensor_id).cast<float>();
         pcl::PointCloud<pcl::PointXYZI> rotated_pcl_cloud;
         pcl::transformPointCloud(pcl_cloud, rotated_pcl_cloud, rotation_matrix);
+
+
+        if (enable_passthrough) {
+            applyPassthroughFilter(rotated_pcl_cloud, sensor_id);
+            }   
 
         auto it = std::lower_bound(pose_data_queue.begin(), pose_data_queue.end(), lidarTimestamp,
                                    [](const PoseData& pose, double timestamp) {
