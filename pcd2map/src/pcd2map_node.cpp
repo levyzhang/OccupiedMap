@@ -29,8 +29,6 @@ const std::string STATE_DOWN = "down";
 const std::string STATE_FLAT = "flat";
 int state_flag = 0;                     // 定义状态标志
 
-int map_frame_count = 0; // 全局变量，用于记录已建图的帧数
-
 bool Is_detectline = true;
 
 // 计算状态变化
@@ -193,10 +191,7 @@ void state_callback(const std_msgs::String::ConstPtr& state_msg)
 
 void process()
 {
-    // auto viewer = pcl::visualization::PCLVisualizer::Ptr(new pcl::visualization::PCLVisualizer("viewer"));
-    // viewer->setBackgroundColor(0, 0, 0);
-
-    ros::Rate rate(10);
+    ros::Rate rate(30);
     while(true){
         std::pair<nav_msgs::Odometry, sensor_msgs::PointCloud2ConstPtr> measurement;
         measurement = getMeasurements();
@@ -244,21 +239,6 @@ void process()
             p2m.OccupancyMap(cloud_after_Radius, odometry);
         }
         pub_pointmap.publish(p2m.map_msg);
-
-                // 增加帧计数并输出日志
-        map_frame_count++;
-        ROS_INFO("--------------------Map frame count---------------: %d", map_frame_count);
-
-
-        // if(Is_detectline){
-        //     // use viewer to show world_cloud
-        //     viewer->addPointCloud<pcl::PointXYZI>(cloud_after_Radius, "world_cloud");
-        //     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "world_cloud");
-        // }
-        
-        // viewer->spinOnce(100);
-        // viewer->removeAllPointClouds();
-        // viewer->removeAllShapes();
         rate.sleep();
     }
 }
